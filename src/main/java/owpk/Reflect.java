@@ -11,12 +11,14 @@ import owpk.util.PrettyConsole;
 import owpk.visitor.BaseVisitor;
 import picocli.CommandLine;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static owpk.util.ClassPathScannerUtils.*;
 
-@CommandLine.Command(subcommands = { CacheCommand.class, Reflect.List.class
+@CommandLine.Command(subcommands = {CacheCommand.class, Reflect.List.class
 }, mixinStandardHelpOptions = true, version = "reflect 1.0",
         description = "prints information about class or jar library (e.g. methods signature, class names etc) to STDOUT" +
                 "\n\tjava 11+ version required for usage")
@@ -101,26 +103,56 @@ public class Reflect implements Runnable {
     public void run() {
         if (className != null && !className.isBlank()) {
             try {
-                var jrtClasses= ClassPathScannerUtils.scanJrt();
+                var jrtClasses = ClassPathScannerUtils.scanJrt();
                 var cachedClasses = ClassPathScannerUtils.scanCachedJars(
                         CacheManager.getInstance());
                 var treeMap = new TreeMap<>(jrtClasses);
                 treeMap.putAll(cachedClasses);
-                Map.Entry<String, ClassMeta> entry = treeMap.entrySet().stream()
-                        .filter(x -> x.getKey().endsWith(className))
-                        .findFirst()
-                        .orElseThrow(() -> new ApplicationError("class " + className + " not found"));
-                var meta = entry.getValue().getLoadClass();
-                var classInfo = new ClassInfo(meta);
+                Map<String, ClassMeta> entry = treeMap.entrySet().stream()
+                        .filter(x -> matches(className, x.getKey()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                printClasses(entry);
+            } catch (ApplicationError | ResourceException e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+        }
+    }
+
+    private static boolean matches(String input, String target) {
+        if (input != null && !input.isBlank() && target != null && !target.isBlank()) {
+            input = input.toLowerCase(Locale.ROOT);
+            target = target.toLowerCase(Locale.ROOT);
+            if (input.charAt(0) == '*') {
+                input = input.substring(1);
+                return target.endsWith(input);
+            }
+            if (input.charAt(input.length() - 1) == '*') {
+                input = input.substring(0, input.length() - 1);
+                return target.startsWith(input);
+            }
+            if (input.contains(".")) {
+                return input.equals(target);
+            } else  {
+                if (target.contains(".")) {
+                    target = target.substring(target.lastIndexOf(".") + 1);
+                }
+                return target.equals(input);
+            }
+        }
+        return false;
+    }
+
+    private static void printClasses(Map<String, ClassMeta> map) {
+        if (map.size() > 0) {
+            map.forEach((k, v) -> {
+                var classInfo = new ClassInfo(v.getLoadClass());
                 var ansi = new PrettyConsole();
                 System.out.println(ansi.formatClass(classInfo));
                 var list = classInfo.getMethodInfo();
                 for (MethodInfo methodInfo : list) {
                     System.out.println(ansi.formatMethod(methodInfo));
                 }
-            } catch (ApplicationError | ResourceException e) {
-                System.out.println(e.getLocalizedMessage());
-            }
-        }
+            });
+        } else System.out.println("empty result");
     }
 }
