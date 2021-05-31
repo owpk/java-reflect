@@ -3,7 +3,7 @@ package owpk.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +17,10 @@ public class ReflectUtils {
     }
 
     public static Optional<List<String>> getClassGenerics(Class<?> clazz) {
-//        var opt = catchException(Class::getTypeParameters, clazz);
-//        return mapToStringAndCollect(Type::getTypeName, opt);
-        return Optional.empty();
+        var opt = catchException(Class::getTypeParameters, clazz);
+        return opt.map(typeVariables -> Arrays.stream(typeVariables)
+                .map(TypeVariable::getName)
+                .collect(Collectors.toList()));
     }
 
     public static Optional<List<String>> getMethodsNames(Class<?> clazz) {
@@ -66,8 +67,9 @@ public class ReflectUtils {
     }
 
 
-    private static <T> Optional<List<String>> mapToStringAndCollect(Function<T, String> function,
-                                                                    Optional<T[]> arr) {
+    @SuppressWarnings("all")
+    private static <T> Optional<List<String>> mapToStringAndCollect(
+            Function<T, String> function, Optional<T[]> arr) {
         return arr.map(ts -> Arrays.stream(ts).map(function)
                 .collect(Collectors.toList()))
                 .or(Optional::empty);

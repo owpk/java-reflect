@@ -22,15 +22,16 @@ public class PrettyConsole {
     }
 
     public String colorizeString(String input, Color color, String format) {
+        if (input.isBlank()) return "";
         return String.format(format, Color.colorize(input, color));
     }
 
     public String colorizeString(String input, Color color) {
-        return String.format("%s", Color.colorize(input, color));
+        return colorizeString(input, color, "%s");
     }
 
     public String formatClass(ClassInfo classInfo) {
-        var cAnnotations = colorizeList(classInfo.getAnnotations(), Color.YELLOW, "%n%s");
+        var cAnnotations = colorizeList(classInfo.getAnnotations(), Color.YELLOW, "%s%n");
         var cName = classInfo.getName();
         var cGenerics = colorizeList(classInfo.getGenericsType(), Color.GREEN, "<%s>");
         var cSuperClass = colorizeString(classInfo.getSuperClass(), Color.BLUE,
@@ -41,7 +42,7 @@ public class PrettyConsole {
     }
 
     public String formatMethod(MethodInfo methodInfo) {
-        var cAnnotations = colorizeList(methodInfo.getAnnotations(), Color.YELLOW, "%n%s%n");
+        var cAnnotations = colorizeList(methodInfo.getAnnotations(), Color.YELLOW, "%s%n");
         var cMod = colorizeString(methodInfo.getModifier(), Color.PINK, "%s ");
         var cMethodArgs = colorizeList(methodInfo.getMethodArgs(), Color.BLUE);
         var cName = methodInfo.getName().isBlank() ? "" : methodInfo.getName();
