@@ -26,7 +26,7 @@ $ reflect jar "/home/owpk/Downloads/spring-boot-2.5.0.jar"
 org.springframework.boot.SpringApplicationExtensionsKt
 org.springframework.boot.system.SystemProperties
 org.springframework.boot.system.JavaVersion
-... # prints jar's class list and cache jar lib to search classes in it too
+... # prints jar's class list and puts jar path to cache to search classes in it too
 
 $ reflect UnsupportedConfigDataLocationException         
 org.springframework.boot.context.config.UnsupportedConfigDataLocationException
