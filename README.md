@@ -54,6 +54,6 @@ public ready()
 ...
 
 # also simple regex available (ingore case enabled by default)
-$ reflect *inputstream
-$ reflect inputstream*
+$ reflect "*inputstream"
+$ reflect "inputstream*"
 ```

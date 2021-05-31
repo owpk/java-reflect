@@ -152,6 +152,7 @@ public class Reflect implements Runnable {
                 for (MethodInfo methodInfo : list) {
                     System.out.println(ansi.formatMethod(methodInfo));
                 }
+                System.out.println("--------------------\n");
             });
         } else System.out.println("empty result");
     }
