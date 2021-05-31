@@ -129,6 +129,8 @@ public class Reflect implements Runnable {
             }
             if (input.charAt(input.length() - 1) == '*') {
                 input = input.substring(0, input.length() - 1);
+                if (!input.contains(".") && target.contains("."))
+                    target = target.substring(target.lastIndexOf(".") + 1);
                 return target.startsWith(input);
             }
             if (input.contains(".")) {
