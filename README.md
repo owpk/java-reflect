@@ -27,8 +27,8 @@ org.springframework.boot.SpringApplicationExtensionsKt
 org.springframework.boot.system.SystemProperties
 org.springframework.boot.context.config.UnsupportedConfigDataLocationException
 ...
-# prints a list of jar classes and puts the jar path in the
-# to search classes in it too
+# prints a list of jar classes and puts the jar path to cache
+# to search classes in that jar too
 
 $ reflect UnsupportedConfigDataLocationException
 org.springframework.boot.context.config.UnsupportedConfigDataLocationException
