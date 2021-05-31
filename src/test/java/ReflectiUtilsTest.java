@@ -19,7 +19,9 @@ public class ReflectiUtilsTest {
     public void printMethods() throws Exception {
         Class<?> cl = list.getClass();
         var list = ReflectUtils.getMethodsNames(cl);
-        list.forEach(System.out::println);
-        Assert.assertTrue(list.size() > 0);
+        if (list.isPresent()) {
+            list.get().forEach(System.out::println);
+            Assert.assertTrue(list.get().size() > 0);
+        }
     }
 }

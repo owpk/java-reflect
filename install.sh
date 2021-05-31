@@ -30,6 +30,7 @@ uninstall() {
 }
 
 install() {
+   uninstall
    if [[ ! -d $REFLECT_DOT  ]]
    then
       echo "making direcory $REFLECT_DOT"

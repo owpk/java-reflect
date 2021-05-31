@@ -3,10 +3,10 @@ package owpk.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import owpk.exception.ApplicationError;
 import owpk.util.ReflectUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,21 +30,15 @@ public class ClassInfo {
     }
 
     public ClassInfo(Class<?> cl) {
-        try {
-            name = ReflectUtils.getClassName(cl);
-            superClass = ReflectUtils.getSuperType(cl);
-            interfaces = ReflectUtils.getInterfaces(cl);
-            annotations = ReflectUtils.getClassAnnotations(cl);
-            genericsType = ReflectUtils.getClassGenerics(cl);
-            methodInfo = ReflectUtils.getMethods(cl).stream().map(x -> {
-                try {
-                    return new MethodInfo(x);
-                } catch (ApplicationError applicationError) {
-                    return new MethodInfo();
-                }
-            }).collect(Collectors.toList());
-        } catch (ApplicationError applicationError) {
-            // TODO: log
-        }
+        name = ReflectUtils.getClassName(cl).orElse("");
+        superClass = ReflectUtils.getSuperType(cl).orElse("");
+        interfaces = ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList());
+        annotations = ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList());
+        genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
+        var opt = ReflectUtils.getMethods(cl);
+        if (opt.isPresent()) {
+            var methods = opt.get();
+            methodInfo = methods.stream().map(MethodInfo::new).collect(Collectors.toList());
+        } else methodInfo = Collections.emptyList();
     }
 }

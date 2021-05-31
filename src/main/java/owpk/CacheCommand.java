@@ -1,6 +1,5 @@
-package owpk.command;
+package owpk;
 
-import owpk.CacheManager;
 import owpk.exception.ResourceException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;

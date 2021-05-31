@@ -7,7 +7,9 @@ import owpk.exception.ApplicationError;
 import owpk.util.ReflectUtils;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @AllArgsConstructor
@@ -31,10 +33,15 @@ public class MethodInfo {
         this.modifier = modifier;
     }
 
-    public MethodInfo(Method method) throws ApplicationError {
+    public MethodInfo(Method method) {
         name = method.getName();
-        modifier = ReflectUtils.getMethodModType(method);
-        annotations = ReflectUtils.getMethodAnnotationsFullInfo(method);
-        methodArgs = ReflectUtils.getSimplifiedMethodArgsInfo(method);
+        var opt = ReflectUtils.getMethodModType(method);
+        if (opt.isPresent()) {
+            modifier = Modifier.toString(opt.get());
+        } else modifier = "";
+        annotations = ReflectUtils.getMethodAnnotationsFullInfo(method)
+                .orElse(Collections.emptyList());
+        methodArgs = ReflectUtils.getMethodArgsFullInfo(method)
+                .orElse(Collections.emptyList());
     }
 }
