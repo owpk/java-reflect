@@ -48,7 +48,8 @@ public class Reflect implements Runnable {
         }
     }
 
-    @CommandLine.Command(name = "list", description = "\tprints list of classes (without any options - only default jvm classes)")
+    @CommandLine.Command(name = "list", aliases = "ls",
+            description = "\tprints list of classes (without any options - only default jvm classes)")
     public static class List implements Runnable {
 
         @CommandLine.Option(names = {"-a", "--all"},

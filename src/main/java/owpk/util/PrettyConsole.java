@@ -22,7 +22,8 @@ public class PrettyConsole {
     }
 
     public String colorizeString(String input, Color color, String format) {
-        if (input.isBlank()) return "";
+        if (input.isBlank())
+            return "";
         return String.format(format, Color.colorize(input, color));
     }
 
@@ -35,7 +36,7 @@ public class PrettyConsole {
         var cName = classInfo.getName();
         var cGenerics = colorizeList(classInfo.getGenericsType(), Color.GREEN, "<%s>");
         var cSuperClass = colorizeString(classInfo.getSuperClass(), Color.BLUE,
-            Color.colorize("\n\textends ", Color.YELLOW) + "%s");
+                Color.colorize("\n\textends ", Color.YELLOW) + "%s");
         var cInterfaces = colorizeList(classInfo.getInterfaces(), Color.GREEN, ", ",
                 Color.colorize("\n\timplements ", Color.YELLOW) + "%s");
         return String.format("%s%s%s%s%s", cAnnotations, cName, cGenerics, cSuperClass, cInterfaces);
