@@ -53,7 +53,7 @@ public getEncoding()
 public ready()
 ...
 
-# also simple regex available (ingore case enabled by default)
+# also simple regex available (ignore case enabled by default)
 # double quotes required
 $ reflect "*inputstream"
 $ reflect "inputstream*"
