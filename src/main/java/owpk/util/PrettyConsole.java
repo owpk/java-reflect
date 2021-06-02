@@ -45,8 +45,9 @@ public class PrettyConsole {
     public String formatMethod(MethodInfo methodInfo) {
         var cAnnotations = colorizeList(methodInfo.getAnnotations(), Color.YELLOW, "%s%n");
         var cMod = colorizeString(methodInfo.getModifier(), Color.PINK, "%s ");
+        var cReturnType = colorizeString(methodInfo.getReturnType(), Color.BLUE, "%s ");
         var cMethodArgs = colorizeList(methodInfo.getMethodArgs(), Color.BLUE);
         var cName = methodInfo.getName().isBlank() ? "" : methodInfo.getName();
-        return String.format("%s%s%s(%s)", cAnnotations, cMod, cName, cMethodArgs);
+        return String.format("%s%s%s%s(%s)", cAnnotations, cMod, cReturnType, cName, cMethodArgs);
     }
 }

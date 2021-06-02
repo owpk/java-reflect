@@ -17,6 +17,7 @@ import java.util.List;
 public class MethodInfo {
     private String name;
     private String modifier;
+    private String returnType;
     private List<String> annotations;
     private List<String> methodArgs;
 
@@ -39,6 +40,7 @@ public class MethodInfo {
         if (opt.isPresent()) {
             modifier = Modifier.toString(opt.get());
         } else modifier = "";
+        returnType = ReflectUtils.getMethodReturnType(method).orElse("");
         annotations = ReflectUtils.getMethodAnnotationsFullInfo(method)
                 .orElse(Collections.emptyList());
         methodArgs = ReflectUtils.getMethodArgsFullInfo(method)

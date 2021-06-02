@@ -51,6 +51,15 @@ public class ReflectUtils {
         var params = catchException(Method::getParameters, method);
         return mapToStringAndCollect(Parameter::toString, params);
     }
+
+    public static Optional<String> getMethodReturnType(Method method) {
+       var opt = catchException(Method::getReturnType, method);
+       if (opt.isPresent()) {
+          return getClassName(opt.get());
+       }
+       return Optional.empty();
+    }
+
     public static Optional<String> getSuperType(Class<?> clazz) {
         var superClass = catchException(Class::getSuperclass, clazz);
         if (superClass.isPresent()) {
