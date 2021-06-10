@@ -6,8 +6,17 @@ REFLECT_DOT=$HOME/.reflect
 uninstall() {
    if [[ -f /usr/bin/reflect ]]
    then
-      echo "removing /usr/bin/reflect"
-      sudo rm /usr/bin/reflect
+      echo "found /usr/bin/reflect"
+      man relfect | awk 'NR==4'
+      echo "sure delete /usr/bin/reflect ? [y/n]"
+      read delete
+      if [[ ${delete,,} == "y" ]]
+      then
+         sudo rm /usr/bin/reflect
+      else
+         echo "abortin installing..."
+         exit 1
+      fi
    fi
 
    if [[ -f $REFLECT_DOT ]]
