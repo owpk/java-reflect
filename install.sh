@@ -14,7 +14,7 @@ uninstall() {
       then
          sudo rm /usr/bin/reflect
       else
-         echo "abortin installing..."
+         echo "abort nstalling..."
          exit 1
       fi
    fi
