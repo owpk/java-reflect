@@ -1,15 +1,16 @@
 #!/bin/bash
+NAME=jreflect
 PWD=`pwd`
-RUN_SCRIPT=$PWD/jreflect
+RUN_SCRIPT=$PWD/$NAME
 REFLECT_DOT=$HOME/.reflect
-TARGET=/usr/bin/jreflect
+TARGET=/usr/bin/$NAME
 
 uninstall() {
    if [[ -f $TARGET ]]
    then
       echo "found $TARGET"
-      man relfect | awk 'NR==4'
-      echo "sure delete  ? [y/n]"
+      man $NAME | awk 'NR==4'
+      echo "sure delete $TARGET? [y/n]"
       read delete
       if [[ ${delete,,} == "y" ]]
       then

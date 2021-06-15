@@ -13,7 +13,15 @@ import java.util.stream.Collectors;
 public class ReflectUtils {
 
     public static Optional<String> getClassName(Class<?> clazz) {
-        return catchException(Class::getName, clazz);
+        Optional<String> name = catchException(Class::getName, clazz);
+        if (name.isPresent()) {
+            String presented = name.get();
+            if (presented.endsWith(";"))
+               presented = presented.substring(0, presented.length() - 1);
+            if (presented.startsWith("[L"))
+               presented = presented.substring(2) + "[]";
+            return Optional.of(presented);
+        } else return Optional.empty();
     }
 
     public static Optional<List<String>> getClassGenerics(Class<?> clazz) {
