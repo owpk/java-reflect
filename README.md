@@ -8,7 +8,7 @@ $ ./intall.sh --unistall
 ```
 ### Usage
 ```bash
-$ reflect list
+$ jreflect list
 java.nio.Bits
 java.io.BufferedInputStream
 java.io.BufferedOutputStream
@@ -19,10 +19,10 @@ java.io.BufferedWriter
 ```
 - add jar lib
 ```bash
-$ reflect jar "/abs/path/to/lib.jar"
+$ jreflect jar "/abs/path/to/lib.jar"
 
 # example:
-$ reflect jar "/home/owpk/Downloads/spring-boot-2.5.0.jar"
+$ jreflect jar "/home/owpk/Downloads/spring-boot-2.5.0.jar"
 org.springframework.boot.SpringApplicationExtensionsKt
 org.springframework.boot.system.SystemProperties
 org.springframework.boot.context.config.UnsupportedConfigDataLocationException
@@ -43,7 +43,7 @@ public synchronized initCause(java.lang.Throwable arg0)
 ... # prints all methods
 ```
 ```bash
-$ reflect InputStreamReader
+$ jreflect InputStreamReader
 java.io.InputStreamReader
         extends java.io.Reader
 public read()

@@ -1,18 +1,19 @@
 #!/bin/bash
 PWD=`pwd`
-RUN_SCRIPT=$PWD/reflect
+RUN_SCRIPT=$PWD/jreflect
 REFLECT_DOT=$HOME/.reflect
+TARGET=/usr/bin/jreflect
 
 uninstall() {
-   if [[ -f /usr/bin/reflect ]]
+   if [[ -f $TARGET ]]
    then
-      echo "found /usr/bin/reflect"
+      echo "found $TARGET"
       man relfect | awk 'NR==4'
-      echo "sure delete /usr/bin/reflect ? [y/n]"
+      echo "sure delete  ? [y/n]"
       read delete
       if [[ ${delete,,} == "y" ]]
       then
-         sudo rm /usr/bin/reflect
+         sudo rm $TARGET
       else
          echo "abort nstalling..."
          exit 1
@@ -58,7 +59,7 @@ install() {
 
    echo "copy $RUN_SCRIPT to /usr/bin"
    sudo cp $RUN_SCRIPT /usr/bin
-   reflect -h
+   $TARGET -h
 }
 
 if [[ $1 == '--uninstall' ]]
