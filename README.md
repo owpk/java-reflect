@@ -41,7 +41,7 @@ org.springframework.boot.system.SystemProperties
 # prints a list of jar classes and puts the jar path to cache
 # to search classes in that jar too
 
-$ reflect UnsupportedConfigDataLocationException
+$ jreflect unsupportedconfig%
 org.springframework.boot.context.config.UnsupportedConfigDataLocationException
         extends org.springframework.boot.context.config.ConfigDataException
 public getLocation()
