@@ -123,11 +123,11 @@ public class Reflect implements Runnable {
         if (input != null && !input.isBlank() && target != null && !target.isBlank()) {
             input = input.toLowerCase(Locale.ROOT);
             target = target.toLowerCase(Locale.ROOT);
-            if (input.charAt(0) == '*') {
+            if (input.charAt(0) == '%') {
                 input = input.substring(1);
                 return target.endsWith(input);
             }
-            if (input.charAt(input.length() - 1) == '*') {
+            if (input.charAt(input.length() - 1) == '%') {
                 input = input.substring(0, input.length() - 1);
                 if (!input.contains(".") && target.contains("."))
                     target = target.substring(target.lastIndexOf(".") + 1);

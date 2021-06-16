@@ -23,7 +23,7 @@ public class CacheCommand {
         cacheManager.saveCache();
     }
 
-    @Command(name = "print", aliases = {"pr"},
+    @Command(name = "list", aliases = {"ls"},
             description = "\tprint cache list")
     public void print() throws ResourceException {
         for (String s : cacheManager.getCache()) {

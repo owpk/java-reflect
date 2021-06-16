@@ -8,14 +8,26 @@ $ ./intall.sh --unistall
 ```
 ### Usage
 ```bash
-$ jreflect list
+$ jreflect ls
 java.nio.Bits
 java.io.BufferedInputStream
 java.io.BufferedOutputStream
-java.io.BufferedReader
-java.io.BufferedWriter
 ...
 # Prints all default jre classes
+```
+```bash
+$ jreflect InputStreamReader
+java.io.InputStreamReader
+        extends java.io.Reader
+public read()
+public read(char[] arg0, int arg1, int arg2)
+public close()
+...
+
+# also simple regex available (ignore case enabled by default)
+$ reflect %input
+# or
+$ reflect input%
 ```
 - add jar lib
 ```bash
@@ -25,7 +37,6 @@ $ jreflect jar "/abs/path/to/lib.jar"
 $ jreflect jar "/home/owpk/Downloads/spring-boot-2.5.0.jar"
 org.springframework.boot.SpringApplicationExtensionsKt
 org.springframework.boot.system.SystemProperties
-org.springframework.boot.context.config.UnsupportedConfigDataLocationException
 ...
 # prints a list of jar classes and puts the jar path to cache
 # to search classes in that jar too
@@ -36,25 +47,5 @@ org.springframework.boot.context.config.UnsupportedConfigDataLocationException
 public getLocation()
 public printStackTrace()
 public printStackTrace(java.io.PrintWriter arg0)
-public printStackTrace(java.io.PrintStream arg0)
-public synchronized fillInStackTrace()
-public synchronized getCause()
-public synchronized initCause(java.lang.Throwable arg0)
 ... # prints all methods
-```
-```bash
-$ jreflect InputStreamReader
-java.io.InputStreamReader
-        extends java.io.Reader
-public read()
-public read(char[] arg0, int arg1, int arg2)
-public close()
-public getEncoding()
-public ready()
-...
-
-# also simple regex available (ignore case enabled by default)
-# double quotes required
-$ reflect "*inputstream"
-$ reflect "inputstream*"
 ```
