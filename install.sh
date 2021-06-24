@@ -40,6 +40,10 @@ uninstall() {
    fi
 }
 
+compile() {
+   ./mvnw clean package
+}
+
 install() {
    uninstall
    if [[ ! -d $REFLECT_DOT  ]]
@@ -48,7 +52,7 @@ install() {
       mkdir $REFLECT_DOT
    fi
 
-   ./mvnw clean package
+   compile
 
    echo "copy jar to $REFLECT_DOT"
    cp reflect.jar $REFLECT_DOT
@@ -66,6 +70,9 @@ install() {
 if [[ $1 == '--uninstall' ]]
 then
    uninstall
+elif [[ $1 == '--compile' ]]
+then
+   compile
 else
    install
 fi

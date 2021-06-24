@@ -1,19 +1,18 @@
 package owpk;
 
-import owpk.dto.ClassInfo;
-import owpk.dto.MethodInfo;
 import owpk.exception.ApplicationError;
 import owpk.exception.ResourceException;
 import owpk.loader.ClassMeta;
 import owpk.util.ClassPathScannerUtils;
 import owpk.util.Color;
 import owpk.util.PrettyConsole;
+import owpk.util.ReflectUtils;
 import owpk.visitor.BaseVisitor;
 import picocli.CommandLine;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static owpk.util.ClassPathScannerUtils.*;
@@ -23,6 +22,9 @@ import static owpk.util.ClassPathScannerUtils.*;
         description = "prints information about class or jar library (e.g. methods signature, class names etc) to STDOUT" +
                 "\n\tjava 11+ version required for usage")
 public class Reflect implements Runnable {
+
+    @CommandLine.Option(names = {"-v", "--verbose"})
+    private boolean verboseName;
 
     public static void main(String[] args) {
         new CommandLine(Reflect.class).execute(args);
@@ -112,7 +114,7 @@ public class Reflect implements Runnable {
                 Map<String, ClassMeta> entry = treeMap.entrySet().stream()
                         .filter(x -> matches(className, x.getKey()))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                printClasses(entry);
+                printClasses(entry, verboseName);
             } catch (ApplicationError | ResourceException e) {
                 System.out.println(e.getLocalizedMessage());
             }
@@ -135,7 +137,7 @@ public class Reflect implements Runnable {
             }
             if (input.contains(".")) {
                 return input.equals(target);
-            } else  {
+            } else {
                 if (target.contains(".")) {
                     target = target.substring(target.lastIndexOf(".") + 1);
                 }
@@ -145,15 +147,44 @@ public class Reflect implements Runnable {
         return false;
     }
 
-    private static void printClasses(Map<String, ClassMeta> map) {
+    private static void printClasses(Map<String, ClassMeta> map, boolean verbose) {
         if (map.size() > 0) {
             map.forEach((k, v) -> {
-                var classInfo = new ClassInfo(v.getLoadClass());
                 var ansi = new PrettyConsole();
-                System.out.println(ansi.formatClass(classInfo));
-                var list = classInfo.getMethodInfo();
-                for (MethodInfo methodInfo : list) {
-                    System.out.println(ansi.formatMethod(methodInfo));
+                Class<?> cl = v.getLoadClass();
+                String name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
+                        ReflectUtils.getSimpleClassName(cl).orElse("");
+                Class<?> superCl = ReflectUtils.getSuperType(cl).orElse(null);
+                String superClass = verbose ? ReflectUtils.getClassName(superCl).orElse("") :
+                        ReflectUtils.getSimpleClassName(superCl).orElse("");
+                var interfaces = ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList());
+                var annotations = ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList());
+                var genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
+
+                System.out.println(ansi.formatClass(annotations, name, genericsType, superClass, interfaces));
+
+                var list = ReflectUtils.getMethods(cl).orElse(new ArrayList<>());
+                for (Method method : list) {
+                    var mName = method.getName();
+                    var opt = ReflectUtils.getMethodModType(method);
+                    var modifier = "";
+                    if (opt.isPresent())
+                        modifier = Modifier.toString(opt.get());
+                    var rClass = ReflectUtils.getMethodReturnType(method).get();
+                    var returnType = verbose ? ReflectUtils.getClassName(rClass).orElse("") :
+                            ReflectUtils.getSimpleClassName(rClass).orElse("");
+                    var mAnnotations = ReflectUtils.getMethodAnnotationsFullInfo(method)
+                            .orElse(Collections.emptyList());
+                    var methodArgs = ReflectUtils.getMethodArgs(method)
+                            .orElse(Collections.emptyList());
+                    var methodArgsConverted = methodArgs.stream()
+                            .map(x -> {
+                                var optName = verbose ? ReflectUtils.getClassName(x)
+                                        : ReflectUtils.getSimpleClassName(x);
+                                return optName.orElse("");
+                            })
+                            .collect(Collectors.toList());
+                    System.out.println(ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName));
                 }
                 System.out.println("--------------------");
             });

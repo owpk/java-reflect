@@ -1,8 +1,5 @@
 package owpk.util;
 
-import owpk.dto.ClassInfo;
-import owpk.dto.MethodInfo;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,23 +28,25 @@ public class PrettyConsole {
         return colorizeString(input, color, "%s");
     }
 
-    public String formatClass(ClassInfo classInfo) {
-        var cAnnotations = colorizeList(classInfo.getAnnotations(), Color.YELLOW, "%s%n");
-        var cName = classInfo.getName();
-        var cGenerics = colorizeList(classInfo.getGenericsType(), Color.GREEN, "<%s>");
-        var cSuperClass = colorizeString(classInfo.getSuperClass(), Color.BLUE,
+    public String formatClass(List<String> annotations,
+          String className, List<String> generics,
+          String superClass, List<String> interfaces) {
+        var cAnnotations = colorizeList(annotations, Color.YELLOW, "%s%n");
+        var cGenerics = colorizeList(generics, Color.GREEN, "<%s>");
+        var cSuperClass = colorizeString(superClass, Color.BLUE,
                 Color.colorize("\n\textends ", Color.YELLOW) + "%s");
-        var cInterfaces = colorizeList(classInfo.getInterfaces(), Color.GREEN, ", ",
+        var cInterfaces = colorizeList(interfaces, Color.GREEN, ", ",
                 Color.colorize("\n\timplements ", Color.YELLOW) + "%s");
-        return String.format("%s%s%s%s%s", cAnnotations, cName, cGenerics, cSuperClass, cInterfaces);
+        return String.format("%s%s%s%s%s", cAnnotations, className, cGenerics, cSuperClass, cInterfaces);
     }
 
-    public String formatMethod(MethodInfo methodInfo) {
-        var cAnnotations = colorizeList(methodInfo.getAnnotations(), Color.YELLOW, "%s%n");
-        var cMod = colorizeString(methodInfo.getModifier(), Color.PINK, "%s ");
-        var cReturnType = colorizeString(methodInfo.getReturnType(), Color.BLUE, "%s ");
-        var cMethodArgs = colorizeList(methodInfo.getMethodArgs(), Color.BLUE);
-        var cName = methodInfo.getName().isBlank() ? "" : methodInfo.getName();
+    public String formatMethod(List<String> annotations, String mod,
+          String returnType, List<String> args, String methodName) {
+        var cAnnotations = colorizeList(annotations, Color.YELLOW, "%s%n");
+        var cMod = colorizeString(mod, Color.PINK, "%s ");
+        var cReturnType = colorizeString(returnType, Color.BLUE, "%s ");
+        var cMethodArgs = colorizeList(args, Color.BLUE);
+        var cName = methodName.isBlank() ? "" : methodName;
         return String.format("%s%s%s%s(%s)", cAnnotations, cMod, cReturnType, cName, cMethodArgs);
     }
 }

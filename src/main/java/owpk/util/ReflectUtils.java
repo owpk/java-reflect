@@ -15,13 +15,25 @@ public class ReflectUtils {
     public static Optional<String> getClassName(Class<?> clazz) {
         Optional<String> name = catchException(Class::getName, clazz);
         if (name.isPresent()) {
-            String presented = name.get();
-            if (presented.endsWith(";"))
-               presented = presented.substring(0, presented.length() - 1);
-            if (presented.startsWith("[L"))
-               presented = presented.substring(2) + "[]";
+            String presented = substringIfArray(name.get());
             return Optional.of(presented);
         } else return Optional.empty();
+    }
+
+    public static Optional<String> getSimpleClassName(Class<?> clazz) {
+        Optional<String> name = catchException(Class::getSimpleName, clazz);
+        if (name.isPresent()) {
+            String presented = substringIfArray(name.get());
+            return Optional.of(presented);
+        } else return Optional.empty();
+    }
+
+    private static String substringIfArray(String presented) {
+         if (presented.endsWith(";"))
+            presented = presented.substring(0, presented.length() - 1);
+         if (presented.startsWith("[L"))
+            presented = presented.substring(2) + "[]";
+       return presented;
     }
 
     public static Optional<List<String>> getClassGenerics(Class<?> clazz) {
@@ -33,7 +45,7 @@ public class ReflectUtils {
 
     public static Optional<List<String>> getMethodsNames(Class<?> clazz) {
         var methods = catchException(Class::getMethods, clazz);
-        return mapToStringAndCollect(Method::getName, methods);
+        return mapAndCollect(Method::getName, methods);
     }
 
     public static Optional<List<Method>> getMethods(Class<?> clazz) {
@@ -43,12 +55,12 @@ public class ReflectUtils {
 
     public static Optional<List<String>> getClassAnnotations(Class<?> clazz) {
         var annotations = catchException(Class::getAnnotations, clazz);
-        return mapToStringAndCollect(Annotation::toString, annotations);
+        return mapAndCollect(Annotation::toString, annotations);
     }
 
     public static Optional<List<String>> getMethodAnnotationsFullInfo(Method method) {
         var annotations = catchException(Method::getDeclaredAnnotations, method);
-        return mapToStringAndCollect(Annotation::toString, annotations);
+        return mapAndCollect(Annotation::toString, annotations);
     }
 
     public static Optional<Integer> getMethodModType(Method method) {
@@ -57,36 +69,40 @@ public class ReflectUtils {
 
     public static Optional<List<String>> getMethodArgsFullInfo(Method method) {
         var params = catchException(Method::getParameters, method);
-        return mapToStringAndCollect(Parameter::toString, params);
+        return mapAndCollect(Parameter::toString, params);
     }
 
-    public static Optional<String> getMethodReturnType(Method method) {
+    public static Optional<List<Class<?>>> getMethodArgs(Method method) {
+        var params = catchException(Method::getParameters, method);
+        return mapAndCollect(Parameter::getType, params);
+    }
+
+    public static Optional<Class<?>> getMethodReturnType(Method method) {
        var opt = catchException(Method::getReturnType, method);
        if (opt.isPresent()) {
-          return getClassName(opt.get());
+          return Optional.of(opt.get());
        }
        return Optional.empty();
     }
 
-    public static Optional<String> getSuperType(Class<?> clazz) {
+    public static Optional<Class<?>> getSuperType(Class<?> clazz) {
         var superClass = catchException(Class::getSuperclass, clazz);
         if (superClass.isPresent()) {
             var cl = superClass.get();
             if (!cl.equals(Object.class))
-                return getClassName(cl);
+                return Optional.of(cl);
         }
         return Optional.empty();
     }
 
     public static Optional<List<String>> getInterfaces(Class<?> clazz) {
         var opt = catchException(Class::getInterfaces, clazz);
-        return mapToStringAndCollect(Class::getName, opt);
+        return mapAndCollect(Class::getName, opt);
     }
 
-
     @SuppressWarnings("all")
-    private static <T> Optional<List<String>> mapToStringAndCollect(
-            Function<T, String> function, Optional<T[]> arr) {
+    private static <T, R> Optional<List<R>> mapAndCollect(
+            Function<T, R> function, Optional<T[]> arr) {
         return arr.map(ts -> Arrays.stream(ts).map(function)
                 .collect(Collectors.toList()))
                 .or(Optional::empty);
