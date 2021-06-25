@@ -13,29 +13,11 @@ import java.util.stream.Collectors;
 public class ReflectUtils {
 
     public static Optional<String> getClassName(Class<?> clazz) {
-        Optional<String> name = catchException(Class::getName, clazz);
-        if (name.isPresent()) {
-            String presented = substringIfArray(name.get());
-            return Optional.of(presented);
-        } else return Optional.empty();
+        return catchException(Class::getTypeName, clazz);
     }
 
     public static Optional<String> getSimpleClassName(Class<?> clazz) {
-        Optional<String> name = catchException(Class::getSimpleName, clazz);
-        if (name.isPresent()) {
-            String presented = substringIfArray(name.get());
-            return Optional.of(presented);
-        } else return Optional.empty();
-    }
-
-    private static String substringIfArray(String presented) {
-         if (presented.endsWith(";"))
-            presented = presented.substring(0, presented.length() - 1);
-         if (presented.startsWith("[L"))
-            presented = presented.substring(2) + "[]";
-         else if (presented.startsWith("[[L"))
-             presented = presented.substring(3) + "[][]";
-       return presented;
+        return catchException(Class::getSimpleName, clazz);
     }
 
     public static Optional<List<String>> getClassGenerics(Class<?> clazz) {
