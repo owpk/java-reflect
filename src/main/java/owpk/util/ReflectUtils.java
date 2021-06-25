@@ -88,9 +88,14 @@ public class ReflectUtils {
         return Optional.empty();
     }
 
-    public static Optional<List<String>> getInterfaces(Class<?> clazz) {
+    public static Optional<List<String>> getInterfacesNames(Class<?> clazz) {
         var opt = catchException(Class::getInterfaces, clazz);
         return mapAndCollect(Class::getName, opt);
+    }
+
+    public static Optional<List<Class<?>>> getInterfaces(Class<?> clazz) {
+        var opt = catchException(Class::getInterfaces, clazz);
+        return mapAndCollect(x -> x, opt);
     }
 
     @SuppressWarnings("all")

@@ -157,10 +157,14 @@ public class Reflect implements Runnable {
                 var superCl = ReflectUtils.getSuperType(cl).orElse(null);
                 var superClass = verbose ? ReflectUtils.getClassName(superCl).orElse("") :
                         ReflectUtils.getSimpleClassName(superCl).orElse("");
-                var interfaces = ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList());
+                var interfaces = verbose ? ReflectUtils.getInterfacesNames(cl).orElse(Collections.emptyList()) :
+                        ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList())
+                                .stream().map(x -> ReflectUtils.getSimpleClassName(x).orElse(""))
+                                .collect(Collectors.toList());
                 var annotations = verbose ? ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList()) :
                         ReflectUtils.getAnnotations(cl).orElse(Collections.emptyList())
-                                .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse("")).collect(Collectors.toList());
+                                .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse(""))
+                                .collect(Collectors.toList());
                 var genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
 
                 System.out.println(ansi.formatClass(annotations, name, genericsType, superClass, interfaces));
