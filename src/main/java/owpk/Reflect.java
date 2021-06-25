@@ -151,19 +151,23 @@ public class Reflect implements Runnable {
         if (map.size() > 0) {
             map.forEach((k, v) -> {
                 var ansi = new PrettyConsole();
-                Class<?> cl = v.getLoadClass();
-                String name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
+                var cl = v.getLoadClass();
+                var name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
                         ReflectUtils.getSimpleClassName(cl).orElse("");
-                Class<?> superCl = ReflectUtils.getSuperType(cl).orElse(null);
-                String superClass = verbose ? ReflectUtils.getClassName(superCl).orElse("") :
+                var superCl = ReflectUtils.getSuperType(cl).orElse(null);
+                var superClass = verbose ? ReflectUtils.getClassName(superCl).orElse("") :
                         ReflectUtils.getSimpleClassName(superCl).orElse("");
                 var interfaces = ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList());
-                var annotations = ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList());
+                var annotations = verbose ? ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList()) :
+                        ReflectUtils.getAnnotations(cl).orElse(Collections.emptyList())
+                                .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse("")).collect(Collectors.toList());
                 var genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
 
                 System.out.println(ansi.formatClass(annotations, name, genericsType, superClass, interfaces));
 
                 var list = ReflectUtils.getMethods(cl).orElse(new ArrayList<>());
+                list.sort(Comparator.comparing(Method::getName));
+
                 for (Method method : list) {
                     var mName = method.getName();
                     var opt = ReflectUtils.getMethodModType(method);
@@ -173,8 +177,9 @@ public class Reflect implements Runnable {
                     var rClass = ReflectUtils.getMethodReturnType(method).get();
                     var returnType = verbose ? ReflectUtils.getClassName(rClass).orElse("") :
                             ReflectUtils.getSimpleClassName(rClass).orElse("");
-                    var mAnnotations = ReflectUtils.getMethodAnnotationsFullInfo(method)
-                            .orElse(Collections.emptyList());
+                    var mAnnotations = verbose ? ReflectUtils.getMethodAnnotationsFullInfo(method).orElse(Collections.emptyList()) :
+                            ReflectUtils.getMethodAnnotations(method).orElse(Collections.emptyList())
+                                    .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse("")).collect(Collectors.toList());
                     var methodArgs = ReflectUtils.getMethodArgs(method)
                             .orElse(Collections.emptyList());
                     var methodArgsConverted = methodArgs.stream()

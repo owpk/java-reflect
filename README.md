@@ -17,10 +17,10 @@ java.io.BufferedOutputStream
 ```
 ```bash
 $ jreflect InputStreamReader
-java.io.InputStreamReader
-        extends java.io.Reader
-public read()
-public read(char[] arg0, int arg1, int arg2)
+InputStreamReader
+        extends Reader
+public read(CharBuffer)
+public read(char[], int, int)
 public close()
 ...
 
@@ -28,6 +28,15 @@ public close()
 $ reflect %input
 # or
 $ reflect input%
+```
+- verbose format
+```bash
+$ jreflect inputstreamrea% -v
+java.io.InputStreamReader
+        extends java.io.Reader
+public read(java.nio.CharBuffer)
+public read(char[], int, int)
+public close()
 ```
 - add jar lib
 ```bash

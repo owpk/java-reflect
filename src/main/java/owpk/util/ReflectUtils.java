@@ -33,6 +33,8 @@ public class ReflectUtils {
             presented = presented.substring(0, presented.length() - 1);
          if (presented.startsWith("[L"))
             presented = presented.substring(2) + "[]";
+         else if (presented.startsWith("[[L"))
+             presented = presented.substring(3) + "[][]";
        return presented;
     }
 
@@ -58,9 +60,19 @@ public class ReflectUtils {
         return mapAndCollect(Annotation::toString, annotations);
     }
 
+    public static Optional<List<Class<?>>> getAnnotations(Class<?> clazz) {
+        var annotations = catchException(Class::getAnnotations, clazz);
+        return mapAndCollect(Annotation::annotationType, annotations);
+    }
+
     public static Optional<List<String>> getMethodAnnotationsFullInfo(Method method) {
         var annotations = catchException(Method::getDeclaredAnnotations, method);
         return mapAndCollect(Annotation::toString, annotations);
+    }
+
+    public static Optional<List<Class<?>>> getMethodAnnotations(Method method) {
+        var annotations = catchException(Method::getDeclaredAnnotations, method);
+        return mapAndCollect(Annotation::annotationType, annotations);
     }
 
     public static Optional<Integer> getMethodModType(Method method) {
@@ -79,9 +91,8 @@ public class ReflectUtils {
 
     public static Optional<Class<?>> getMethodReturnType(Method method) {
        var opt = catchException(Method::getReturnType, method);
-       if (opt.isPresent()) {
+       if (opt.isPresent())
           return Optional.of(opt.get());
-       }
        return Optional.empty();
     }
 
