@@ -51,7 +51,7 @@ public class ClassPathScannerUtils {
     public static Map<String, ClassMeta> scanJar(String jar, CacheManager cacheManager) throws ApplicationError, ResourceException {
         cacheManager.add(jar);
         try {
-            cacheManager.saveCache();
+            cacheManager.validateAndSave();
             var path = getJarPath(jar);
             return defaultScan(new CustomURLClassLoader(jar),
                     path, new BaseVisitor());

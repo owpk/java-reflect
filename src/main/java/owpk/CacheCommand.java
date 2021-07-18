@@ -19,8 +19,8 @@ public class CacheCommand {
             description = "\tadd specific jar path to cache")
     public void add(@Parameters String pathToLib) throws ResourceException {
         cacheManager.add(pathToLib);
-        cacheManager.validateCache();
-        cacheManager.saveCache();
+        cacheManager.validate();
+        cacheManager.validateAndSave();
     }
 
     @Command(name = "list", aliases = {"ls"},
@@ -35,6 +35,6 @@ public class CacheCommand {
             description = "\tclear cache")
     public void clear() throws ResourceException {
         cacheManager.clear();
-        cacheManager.saveCache();
+        cacheManager.validateAndSave();
     }
 }

@@ -25,14 +25,14 @@ public class CacheManager {
         cache = new HashSet<>();
         cache.addAll(FileUtils.readAllLines(resourceHolder.getCacheFilePath()));
         toCache = resourceHolder.getCacheFilePath();
-        validateCache();
+        validateAndSave();
     }
 
-    public void validateCache() {
+    public void validate() {
         cache.removeIf(cachedLine ->
-                !Files.exists(Paths.get(cachedLine))
-                        && !cachedLine.endsWith(".class")
-                        && !cachedLine.endsWith(".jar"));
+                !Files.exists(Paths.get(cachedLine)) ||
+                       (!cachedLine.endsWith(".class") ||
+                        !cachedLine.endsWith(".jar")));
     }
 
     public void add(String path) {
@@ -47,8 +47,8 @@ public class CacheManager {
         return cache;
     }
 
-    public void saveCache() throws ResourceException {
-        validateCache();
+    public void validateAndSave() throws ResourceException {
+        validate();
         FileUtils.write(toCache, cache);
     }
 }

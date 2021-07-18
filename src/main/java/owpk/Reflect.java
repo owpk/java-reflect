@@ -26,7 +26,8 @@ public class Reflect implements Runnable {
     @CommandLine.Option(names = {"-v", "--verbose"})
     private boolean verboseName;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        CacheManager.getInstance().validateAndSave();
         new CommandLine(Reflect.class).execute(args);
     }
 
@@ -84,8 +85,7 @@ public class Reflect implements Runnable {
             var jars = defaultScan(getJarPath(jar), new BaseVisitor());
             var cacheMgr = CacheManager.getInstance();
             cacheMgr.add(jar);
-            cacheMgr.validateCache();
-            cacheMgr.saveCache();
+            cacheMgr.validateAndSave();
             jars.forEach(System.out::println);
         }
 
