@@ -4,7 +4,7 @@
 $ ./install.sh
 
 # uninstall
-$ ./intall.sh --unistall
+$ ./intall.sh --uninstall
 ```
 ### Usage
 ```bash
