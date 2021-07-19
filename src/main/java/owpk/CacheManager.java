@@ -25,14 +25,12 @@ public class CacheManager {
         cache = new HashSet<>();
         cache.addAll(FileUtils.readAllLines(resourceHolder.getCacheFilePath()));
         toCache = resourceHolder.getCacheFilePath();
-        validateAndSave();
     }
 
     public void validate() {
         cache.removeIf(cachedLine ->
                 !Files.exists(Paths.get(cachedLine)) ||
-                       (!cachedLine.endsWith(".class") ||
-                        !cachedLine.endsWith(".jar")));
+                        !cachedLine.endsWith(".jar"));
     }
 
     public void add(String path) {

@@ -26,7 +26,7 @@ public class Reflect implements Runnable {
     @CommandLine.Option(names = {"-v", "--verbose"})
     private boolean verboseName;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws ResourceException {
         CacheManager.getInstance().validateAndSave();
         new CommandLine(Reflect.class).execute(args);
     }
@@ -185,7 +185,7 @@ public class Reflect implements Runnable {
                             ReflectUtils.getMethodAnnotations(method).orElse(Collections.emptyList())
                                     .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse("")).collect(Collectors.toList());
                     var methodArgs = ReflectUtils.getMethodArgs(method)
-                            .orElse(Collections.emptyList());
+                       .orElse(Collections.emptyList());
                     var methodArgsConverted = methodArgs.stream()
                             .map(x -> {
                                 var optName = verbose ? ReflectUtils.getClassName(x)

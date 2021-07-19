@@ -19,7 +19,6 @@ public class CacheCommand {
             description = "\tadd specific jar path to cache")
     public void add(@Parameters String pathToLib) throws ResourceException {
         cacheManager.add(pathToLib);
-        cacheManager.validate();
         cacheManager.validateAndSave();
     }
 
