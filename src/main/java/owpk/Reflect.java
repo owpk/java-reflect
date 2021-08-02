@@ -97,7 +97,6 @@ public class Reflect implements Runnable {
                 System.out.println(ansi.colorizeString(c, Color.GREEN));
                 var cachedClasses = defaultScan(getJarPath(c), new BaseVisitor());
                 cachedClasses.forEach(System.out::println);
-                System.out.println("---------------------------");
             }
         }
     }
@@ -149,9 +148,11 @@ public class Reflect implements Runnable {
 
     private static void printClasses(Map<String, ClassMeta> map, boolean verbose) {
         if (map.size() > 0) {
-            map.forEach((k, v) -> {
+            // map.forEach((k, v) -> {
+            var print = map.entrySet().stream().map(e -> {
+                var result = "";
                 var ansi = new PrettyConsole();
-                var cl = v.getLoadClass();
+                var cl = e.getValue().getLoadClass();
                 var name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
                         ReflectUtils.getSimpleClassName(cl).orElse("");
                 var superCl = ReflectUtils.getSuperType(cl).orElse(null);
@@ -167,7 +168,9 @@ public class Reflect implements Runnable {
                                 .collect(Collectors.toList());
                 var genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
 
-                System.out.println(ansi.formatClass(annotations, name, genericsType, superClass, interfaces));
+                result += ansi.formatClass(annotations, name, genericsType, superClass, interfaces) + "\n";
+
+                // System.out.println(ansi.formatClass(annotations, name, genericsType, superClass, interfaces));
 
                 var list = ReflectUtils.getMethods(cl).orElse(new ArrayList<>());
                 list.sort(Comparator.comparing(Method::getName));
@@ -193,10 +196,13 @@ public class Reflect implements Runnable {
                                 return optName.orElse("");
                             })
                             .collect(Collectors.toList());
-                    System.out.println(ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName));
+                    result += ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName) + "\n";
+
+                    // System.out.println(ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName));
                 }
-                System.out.println("--------------------");
-            });
+                return result;
+            }).collect(Collectors.joining("-----------------\n"));
+            System.out.println(print);
         } else System.out.println("empty result");
     }
 }
