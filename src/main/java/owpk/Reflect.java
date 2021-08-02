@@ -147,62 +147,69 @@ public class Reflect implements Runnable {
     }
 
     private static void printClasses(Map<String, ClassMeta> map, boolean verbose) {
+        var ansi = new PrettyConsole();
         if (map.size() > 0) {
-            // map.forEach((k, v) -> {
-            var print = map.entrySet().stream().map(e -> {
-                var result = "";
-                var ansi = new PrettyConsole();
-                var cl = e.getValue().getLoadClass();
-                var name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
-                        ReflectUtils.getSimpleClassName(cl).orElse("");
-                var superCl = ReflectUtils.getSuperType(cl).orElse(null);
-                var superClass = verbose ? ReflectUtils.getClassName(superCl).orElse("") :
-                        ReflectUtils.getSimpleClassName(superCl).orElse("");
-                var interfaces = verbose ? ReflectUtils.getInterfacesNames(cl).orElse(Collections.emptyList()) :
-                        ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList())
-                                .stream().map(x -> ReflectUtils.getSimpleClassName(x).orElse(""))
-                                .collect(Collectors.toList());
-                var annotations = verbose ? ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList()) :
-                        ReflectUtils.getAnnotations(cl).orElse(Collections.emptyList())
-                                .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse(""))
-                                .collect(Collectors.toList());
-                var genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
-
-                result += ansi.formatClass(annotations, name, genericsType, superClass, interfaces) + "\n";
-
-                // System.out.println(ansi.formatClass(annotations, name, genericsType, superClass, interfaces));
+            var print = map.values().stream().map(classMeta -> {
+                Class<?> cl = classMeta.getLoadClass();
+                var result = formatClass(ansi, cl, verbose);
 
                 var list = ReflectUtils.getMethods(cl).orElse(new ArrayList<>());
                 list.sort(Comparator.comparing(Method::getName));
 
                 for (Method method : list) {
-                    var mName = method.getName();
-                    var opt = ReflectUtils.getMethodModType(method);
-                    var modifier = "";
-                    if (opt.isPresent())
-                        modifier = Modifier.toString(opt.get());
-                    var rClass = ReflectUtils.getMethodReturnType(method).get();
-                    var returnType = verbose ? ReflectUtils.getClassName(rClass).orElse("") :
-                            ReflectUtils.getSimpleClassName(rClass).orElse("");
-                    var mAnnotations = verbose ? ReflectUtils.getMethodAnnotationsFullInfo(method).orElse(Collections.emptyList()) :
-                            ReflectUtils.getMethodAnnotations(method).orElse(Collections.emptyList())
-                                    .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse("")).collect(Collectors.toList());
-                    var methodArgs = ReflectUtils.getMethodArgs(method)
-                       .orElse(Collections.emptyList());
-                    var methodArgsConverted = methodArgs.stream()
-                            .map(x -> {
-                                var optName = verbose ? ReflectUtils.getClassName(x)
-                                        : ReflectUtils.getSimpleClassName(x);
-                                return optName.orElse("");
-                            })
-                            .collect(Collectors.toList());
-                    result += ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName) + "\n";
-
-                    // System.out.println(ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName));
+                    result += formatMethod(ansi, method, verbose);
                 }
                 return result;
             }).collect(Collectors.joining("-----------------\n"));
             System.out.println(print);
         } else System.out.println("empty result");
+    }
+
+    public static String formatClass(PrettyConsole ansi, Class<?> cl, boolean verbose) {
+        var result = "";
+        var name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
+                ReflectUtils.getSimpleClassName(cl).orElse("");
+        var superCl = ReflectUtils.getSuperType(cl).orElse(null);
+        var superClass = verbose ? ReflectUtils.getClassName(superCl).orElse("") :
+                ReflectUtils.getSimpleClassName(superCl).orElse("");
+        var interfaces = verbose ? ReflectUtils.getInterfacesNames(cl).orElse(Collections.emptyList()) :
+                ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList())
+                        .stream().map(x -> ReflectUtils.getSimpleClassName(x).orElse(""))
+                        .collect(Collectors.toList());
+        var annotations = verbose ? ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList()) :
+                ReflectUtils.getAnnotations(cl).orElse(Collections.emptyList())
+                        .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse(""))
+                        .collect(Collectors.toList());
+        var genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
+
+        result += ansi.formatClass(annotations, name, genericsType, superClass, interfaces) + "\n";
+        return result;
+    }
+
+    public static String formatMethod(PrettyConsole ansi, Method method, boolean verbose) {
+        var result = "";
+        var mName = method.getName();
+        var opt = ReflectUtils.getMethodModType(method);
+        var modifier = "";
+        if (opt.isPresent())
+            modifier = Modifier.toString(opt.get());
+        var rClass = ReflectUtils.getMethodReturnType(method).get();
+        var returnType = verbose ? ReflectUtils.getClassName(rClass).orElse("") :
+                ReflectUtils.getSimpleClassName(rClass).orElse("");
+        var mAnnotations = verbose ? ReflectUtils.getMethodAnnotationsFullInfo(method).orElse(Collections.emptyList()) :
+                ReflectUtils.getMethodAnnotations(method).orElse(Collections.emptyList())
+                        .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse("")).collect(Collectors.toList());
+        var methodArgs = ReflectUtils.getMethodParameters(method).orElse(Collections.emptyList());
+        var methodArgsConverted = methodArgs.stream().map(x -> {
+            var arg = x.toString();
+            var type = arg.substring(0, arg.indexOf(' '));
+            if (!verbose) {
+                if (type.contains("."))
+                    type = type.substring(type.lastIndexOf("."));
+            }
+            return type;
+        }).collect(Collectors.toList());
+        result += ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName) + "\n";
+        return result;
     }
 }

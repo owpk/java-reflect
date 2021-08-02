@@ -3,6 +3,7 @@ package owpk.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.TypeVariable;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,21 @@ public class ReflectUtils {
     }
 
     public static Optional<String> getSimpleClassName(Class<?> clazz) {
+        if (clazz != null && clazz.equals(Object.class)) {
+            var type = ((ParameterizedType) clazz.getGenericSuperclass());
+            if (type != null) {
+                return getTypeLetter(clazz);
+            }
+        }
         return catchException(Class::getSimpleName, clazz);
+    }
+
+    public static Optional<String> getTypeLetter(ParameterizedType type) {
+        return catchException(x -> (x.getActualTypeArguments()[0]).getTypeName(), type);
+    }
+
+    public static Optional<String> getTypeLetter(Class<?> clazz) {
+        return catchException(x -> (((ParameterizedType) x.getGenericSuperclass()).getActualTypeArguments()[0]).getTypeName(), clazz);
     }
 
     public static Optional<List<String>> getClassGenerics(Class<?> clazz) {
@@ -66,16 +81,21 @@ public class ReflectUtils {
         return mapAndCollect(Parameter::toString, params);
     }
 
+    public static Optional<List<Parameter>> getMethodParameters(Method method) {
+        var params = catchException(Method::getParameters, method);
+        return mapAndCollect(x -> x, params);
+    }
+
     public static Optional<List<Class<?>>> getMethodArgs(Method method) {
         var params = catchException(Method::getParameters, method);
         return mapAndCollect(Parameter::getType, params);
     }
 
     public static Optional<Class<?>> getMethodReturnType(Method method) {
-       var opt = catchException(Method::getReturnType, method);
-       if (opt.isPresent())
-          return Optional.of(opt.get());
-       return Optional.empty();
+        var opt = catchException(Method::getReturnType, method);
+        if (opt.isPresent())
+            return Optional.of(opt.get());
+        return Optional.empty();
     }
 
     public static Optional<Class<?>> getSuperType(Class<?> clazz) {
