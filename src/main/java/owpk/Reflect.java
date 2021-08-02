@@ -205,7 +205,7 @@ public class Reflect implements Runnable {
             var type = arg.substring(0, arg.indexOf(' '));
             if (!verbose) {
                 if (type.contains("."))
-                    type = type.substring(type.lastIndexOf("."));
+                    type = type.substring(type.lastIndexOf(".") + 1);
             }
             return type;
         }).collect(Collectors.toList());
