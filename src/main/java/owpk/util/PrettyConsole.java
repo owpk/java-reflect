@@ -28,7 +28,7 @@ public class PrettyConsole {
     }
 
     public String formatClass(List<String> annotations, String formattedClassName,
-          String formattedSuperClass, List<String> formattedInterfaces) {
+                              String formattedSuperClass, List<String> formattedInterfaces) {
         var cAnnotations = colorizeList(annotations, Color.YELLOW, "%s%n");
         var cSuperClass = formattedSuperClass + Color.colorize("\n\textends ", Color.YELLOW);
         var cInterfaces = formattedInterfaces + ", " +
@@ -39,7 +39,7 @@ public class PrettyConsole {
     public String formatClassName(Color color, String name, List<String> generics) {
         String cName;
         if (color != null)
-         cName = colorizeString(name, color);
+            cName = colorizeString(name, color);
         else cName = name;
 
         var cGenerics = colorizeList(generics, Color.GREEN, "<%s>");
@@ -47,11 +47,11 @@ public class PrettyConsole {
     }
 
     public String formatClassName(String name, List<String> generics) {
-       return formatClassName(null, name, generics);
+        return formatClassName(null, name, generics);
     }
 
     public String formatMethod(List<String> annotations, String mod,
-          String returnType, List<String> args, String methodName) {
+                               String returnType, List<String> args, String methodName) {
         var cAnnotations = colorizeList(annotations, Color.YELLOW, "%s%n");
         var cMod = colorizeString(mod, Color.PINK, "%s ");
         var cReturnType = colorizeString(returnType, Color.BLUE, "%s ");
@@ -59,6 +59,7 @@ public class PrettyConsole {
         var cName = methodName.isBlank() ? "" : methodName;
         return String.format("%s%s%s%s(%s)", cAnnotations, cMod, cReturnType, cName, cMethodArgs);
     }
+}
 
 
 
