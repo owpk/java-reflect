@@ -167,23 +167,35 @@ public class Reflect implements Runnable {
 
     public static String formatClass(PrettyConsole ansi, Class<?> cl, boolean verbose) {
         var result = "";
-        var name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
-                ReflectUtils.getSimpleClassName(cl).orElse("");
+        var generics = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
+
         var superCl = ReflectUtils.getSuperType(cl).orElse(null);
-        var superClass = verbose ? ReflectUtils.getClassName(superCl).orElse("") :
-                ReflectUtils.getSimpleClassName(superCl).orElse("");
-        var interfaces = verbose ? ReflectUtils.getInterfacesNames(cl).orElse(Collections.emptyList()) :
-                ReflectUtils.getInterfaces(cl).orElse(Collections.emptyList())
-                        .stream().map(x -> ReflectUtils.getSimpleClassName(x).orElse(""))
-                        .collect(Collectors.toList());
+
+        var interfaces = ReflectUtils.getInterfaces(cl)
+           .orElse(Collections.emptyList());
+
         var annotations = verbose ? ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList()) :
                 ReflectUtils.getAnnotations(cl).orElse(Collections.emptyList())
                         .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse(""))
                         .collect(Collectors.toList());
-        var genericsType = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
 
-        result += ansi.formatClass(annotations, name, genericsType, superClass, interfaces) + "\n";
+        var formattedBaseClass = formatClassName(null, ansi, cl, verbose);
+
+        var formattedSuperClass = formatClassName(Color.BLUE, ansi, superCl, verbose);
+
+        var formattedInterfacesList = interfaces.stream()
+           .map(x -> formatClassName(Color.GREEN, ansi, x, verbose))
+           .collect(Collectors.toList());
+
+        result += ansi.formatClass(annotations, formattedBaseClass, formattedSuperClass, formattedInterfacesList) + "\n";
         return result;
+    }
+
+    public static String formatClassName(Color color, PrettyConsole ansi, Class<?> cl, boolean verbose) {
+        var name = verbose ? ReflectUtils.getClassName(cl).orElse("") :
+                ReflectUtils.getSimpleClassName(cl).orElse("");
+        var generics = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
+        return ansi.formatClassName(color, name, generics);
     }
 
     public static String formatMethod(PrettyConsole ansi, Method method, boolean verbose) {

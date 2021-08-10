@@ -1,7 +1,6 @@
 package owpk.util;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.List; import java.util.stream.Collectors;
 
 public class PrettyConsole {
 
@@ -28,16 +27,27 @@ public class PrettyConsole {
         return colorizeString(input, color, "%s");
     }
 
-    public String formatClass(List<String> annotations,
-          String className, List<String> generics,
-          String superClass, List<String> interfaces) {
+    public String formatClass(List<String> annotations, String formattedClassName,
+          String formattedSuperClass, List<String> formattedInterfaces) {
         var cAnnotations = colorizeList(annotations, Color.YELLOW, "%s%n");
+        var cSuperClass = formattedSuperClass + Color.colorize("\n\textends ", Color.YELLOW);
+        var cInterfaces = formattedInterfaces + ", " +
+                Color.colorize("\n\timplements ", Color.YELLOW);
+        return String.format("%s%s%s%s", cAnnotations, formattedClassName, cSuperClass, cInterfaces);
+    }
+
+    public String formatClassName(Color color, String name, List<String> generics) {
+        String cName;
+        if (color != null)
+         cName = colorizeString(name, color);
+        else cName = name;
+
         var cGenerics = colorizeList(generics, Color.GREEN, "<%s>");
-        var cSuperClass = colorizeString(superClass, Color.BLUE,
-                Color.colorize("\n\textends ", Color.YELLOW) + "%s");
-        var cInterfaces = colorizeList(interfaces, Color.GREEN, ", ",
-                Color.colorize("\n\timplements ", Color.YELLOW) + "%s");
-        return String.format("%s%s%s%s%s", cAnnotations, className, cGenerics, cSuperClass, cInterfaces);
+        return String.format("%s%s", cName, cGenerics);
+    }
+
+    public String formatClassName(String name, List<String> generics) {
+       return formatClassName(null, name, generics);
     }
 
     public String formatMethod(List<String> annotations, String mod,
@@ -49,4 +59,6 @@ public class PrettyConsole {
         var cName = methodName.isBlank() ? "" : methodName;
         return String.format("%s%s%s%s(%s)", cAnnotations, cMod, cReturnType, cName, cMethodArgs);
     }
-}
+
+
+
