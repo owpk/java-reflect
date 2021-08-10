@@ -167,22 +167,15 @@ public class Reflect implements Runnable {
 
     public static String formatClass(PrettyConsole ansi, Class<?> cl, boolean verbose) {
         var result = "";
-        var generics = ReflectUtils.getClassGenerics(cl).orElse(Collections.emptyList());
-
         var superCl = ReflectUtils.getSuperType(cl).orElse(null);
-
         var interfaces = ReflectUtils.getInterfaces(cl)
            .orElse(Collections.emptyList());
-
         var annotations = verbose ? ReflectUtils.getClassAnnotations(cl).orElse(Collections.emptyList()) :
                 ReflectUtils.getAnnotations(cl).orElse(Collections.emptyList())
                         .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse(""))
                         .collect(Collectors.toList());
-
         var formattedBaseClass = formatClassName(null, ansi, cl, verbose);
-
         var formattedSuperClass = formatClassName(Color.BLUE, ansi, superCl, verbose);
-
         var formattedInterfacesList = interfaces.stream()
            .map(x -> formatClassName(Color.GREEN, ansi, x, verbose))
            .collect(Collectors.toList());
@@ -206,21 +199,12 @@ public class Reflect implements Runnable {
         if (opt.isPresent())
             modifier = Modifier.toString(opt.get());
         var rClass = ReflectUtils.getMethodReturnType(method).get();
-        var returnType = verbose ? ReflectUtils.getClassName(rClass).orElse("") :
-                ReflectUtils.getSimpleClassName(rClass).orElse("");
+        var returnType = formatClassName(Color.BLUE, ansi, rClass, verbose);
         var mAnnotations = verbose ? ReflectUtils.getMethodAnnotationsFullInfo(method).orElse(Collections.emptyList()) :
                 ReflectUtils.getMethodAnnotations(method).orElse(Collections.emptyList())
                         .stream().map(x -> "@" + ReflectUtils.getSimpleClassName(x).orElse("")).collect(Collectors.toList());
         var methodArgs = ReflectUtils.getMethodParameters(method).orElse(Collections.emptyList());
-        var methodArgsConverted = methodArgs.stream().map(x -> {
-            var arg = x.toString();
-            var type = arg.substring(0, arg.indexOf(' '));
-            if (!verbose) {
-                if (type.contains("."))
-                    type = type.substring(type.lastIndexOf(".") + 1);
-            }
-            return type;
-        }).collect(Collectors.toList());
+        var methodArgsConverted = methodArgs.stream().map(x -> formatClassName(Color.BLUE, ansi, x.getType(), verbose)).collect(Collectors.toList());
         result += ansi.formatMethod(mAnnotations, modifier, returnType, methodArgsConverted, mName) + "\n";
         return result;
     }
