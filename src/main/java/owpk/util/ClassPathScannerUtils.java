@@ -27,6 +27,7 @@ public class ClassPathScannerUtils {
         var cache = cacheManager.getCache();
         var allCached = new LinkedHashMap<String, ClassMeta>();
         for (String s : cache) {
+            System.out.println("::Searching in cached jars: " + s);
             var cached = scanJar(s, cacheManager);
             allCached.putAll(cached);
         }

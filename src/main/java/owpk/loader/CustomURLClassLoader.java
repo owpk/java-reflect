@@ -4,6 +4,7 @@ import owpk.exception.ApplicationError;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Set;
 
 public class CustomURLClassLoader implements Loader {
@@ -26,7 +27,9 @@ public class CustomURLClassLoader implements Loader {
 
     public CustomURLClassLoader(String path, String protocol) throws ApplicationError {
         this.protocol = protocol;
-        loader = new URLClassLoader(createURLFromPath(path));
+        var urlFromPath = createURLFromPath(path);
+        loader = new URLClassLoader(urlFromPath);
+        System.out.println("DEBUG: Create url class loader: " + Arrays.toString(urlFromPath));
     }
 
     public CustomURLClassLoader(Set<String> paths, String protocol) throws ApplicationError {

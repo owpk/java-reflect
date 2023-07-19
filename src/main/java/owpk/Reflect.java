@@ -105,6 +105,7 @@ public class Reflect implements Runnable {
     public void run() {
         if (className != null && !className.isBlank()) {
             try {
+                System.out.println("::Searching in jrt file system...");
                 var jrtClasses = ClassPathScannerUtils.scanJrt();
                 var cachedClasses = ClassPathScannerUtils.scanCachedJars(
                         CacheManager.getInstance());
