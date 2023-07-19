@@ -29,7 +29,6 @@ public class CustomURLClassLoader implements Loader {
         this.protocol = protocol;
         var urlFromPath = createURLFromPath(path);
         loader = new URLClassLoader(urlFromPath);
-        System.out.println("DEBUG: Create url class loader: " + Arrays.toString(urlFromPath));
     }
 
     public CustomURLClassLoader(Set<String> paths, String protocol) throws ApplicationError {
